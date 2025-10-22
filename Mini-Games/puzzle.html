@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Мини Игры</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: linear-gradient(90deg, rgb(71, 144, 172), rgb(19, 19, 187));
+      color: #fff;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 48px;
+      font-weight: bold;
+      text-shadow: 0 0 10px white;
+      position: relative;
+    }
+
+    #counter {
+      position: absolute;
+      top: 10px;
+      right: 20px;
+      font-size: 20px;
+      font-weight: normal;
+      color: #fff;
+      text-shadow: 0 0 5px #000;
+    }
+
+    .controls {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    select,
+    button {
+      margin: 10px;
+      margin-bottom: 50px;
+      padding: 15px 20px;
+      font-size: 16px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      width: 180px;
+      font-weight: 700;
+      color: rgb(19, 19, 187);
+      background-color: white;
+      box-shadow: 0px 0px 10px white;
+      appearance: none;
+    }
+
+    button:hover,
+    select:hover {
+      background-color: rgb(19, 19, 187);
+      color: white;
+      box-shadow: 0px 0px 20px rgb(97, 130, 227);
+    }
+
+    .file-wrapper {
+      position: relative;
+      display: inline-block;
+      margin: 10px;
+      margin-bottom: 50px;
+    }
+
+    .file-wrapper .file-btn {
+      display: inline-block;
+      padding: 15px 20px;
+      font-size: 16px;
+      font-weight: 700;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      width: 180px;
+      background-color: rgb(40, 109, 136);
+      color: white;
+      filter: brightness(1.2);
+      box-shadow: 0px 0px 10px lightcyan;
+    }
+
+    .file-wrapper .file-btn:hover {
+      background-color: rgb(19, 19, 187);
+      color: white;
+      box-shadow: 0px 0px 20px rgb(97, 130, 227);
+    }
+
+    .file-wrapper input[type="file"] {
+      position: absolute;
+      left: 0;
+      top: 0;
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+    }
+
+    .container {
+      display: flex;
+      justify-content: space-around;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+
+    #game {
+      display: grid;
+    }
+
+    .tile {
+      width: 100px;
+      height: 100px;
+      background-size: 100% 100%;
+      border: 1px solid #222;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .tile.correct {
+      filter: brightness(1.2);
+    }
+
+    #original {
+      border: 3px dashed white;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    #original img {
+      width: 320px;
+      height: 320px;
+
+    }
+
+    #result {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 32px;
+    }
+
+    .star {
+      font-size: 50px;
+      animation: pop 0.8s ease-out;
+    }
+    .controls a{
+      background-color: white;
+      color: rgb(15, 15, 135);
+      font-weight: 700;
+      padding: 14px 20px;
+      border-radius: 10px;
+      text-decoration: none;
+      filter: brightness(1.3);
+      box-shadow: 0px 0px 10px white;
+    }
+    .controls a:hover{
+      background-color: rgb(15, 15, 135);
+      color: white;
+    }
+    @keyframes pop {
+      0% {
+        transform: scale(0);
+        opacity: 0;
+      }
+
+      70% {
+        transform: scale(1.3);
+        opacity: 1;
+      }
+
+      100% {
+        transform: scale(1);
+      }
+    }
+   
+  </style>
+</head>
+
+<body>
+  <h1>
+    Фото-Пазл
+    <span id="counter"></span>
+  </h1>
+
+  <div class="controls">
+    <select id="level">
+      <option value="4" selected>Уровень (4×4)</option>
+      <option value="5">Уровень+ (5×5)</option>
+    </select>
+
+    <div class="file-wrapper">
+      <button class="file-btn">Загрузить фото</button>
+      <input type="file" id="imageInput" accept="image/*" />
+    </div>
+
+    <button id="start">Начать игру</button> 
+     <a href="../Wordly/wordly.html">Следующая игра</a>
+  </div>
+   
+  <div class="container">
+    <div id="game"></div>
+    <div id="original">
+      <p>Оригинал:</p>
+      <img id="originalImg" src="" alt="Тут пока пусто" />
+    </div>
+  </div>
+
+  <div id="result"></div>
+
+  <audio id="winSound" src="./tadaa-47995.mp3"></audio>
+
+  <script>
+    const game = document.getElementById("game");
+    const startBtn = document.getElementById("start");
+    const result = document.getElementById("result");
+    const levelSelect = document.getElementById("level");
+    const imageInput = document.getElementById("imageInput");
+    const winSound = document.getElementById("winSound");
+    const originalImg = document.getElementById("originalImg");
+    const counter = document.getElementById("counter");
+
+    let imageSrc = "";
+    let tiles = [];
+    let firstTile = null;
+
+    imageInput.addEventListener("change", function (e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (event) {
+          imageSrc = event.target.result;
+          originalImg.src = imageSrc;
+
+          // Если уже выбран уровень, запускаем игру
+          startGame();
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    startBtn.addEventListener("click", startGame);
+
+    levelSelect.addEventListener("change", () => {
+      if (imageSrc) {
+        startGame();
+      }
+    });
+
+    function startGame() {
+      if (!imageSrc) {
+        alert("Пожалуйста, сначала выберите фотографию.");
+        return;
+      }
+
+      const size = parseInt(levelSelect.value);
+      result.innerHTML = "";
+      counter.textContent = "";
+      game.style.gridTemplateColumns = `repeat(${size}, 100px)`;
+      game.style.gridTemplateRows = `repeat(${size}, 100px)`;
+      game.innerHTML = "";
+      tiles = [];
+      firstTile = null;
+
+      const positions = [];
+      for (let y = 0; y < size; y++) {
+        for (let x = 0; x < size; x++) {
+          positions.push({ x, y });
+        }
+      }
+
+      const shuffled = [...positions].sort(() => Math.random() - 0.5);
+
+      shuffled.forEach((pos, index) => {
+        const tile = document.createElement("div");
+        tile.className = "tile";
+        tile.style.backgroundImage = `url(${imageSrc})`;
+        tile.style.backgroundSize = `${size * 100}px ${size * 100}px`;
+        tile.style.backgroundPosition = `${-pos.x * 100}px ${-pos.y * 100}px`;
+        tile.dataset.correctX = index % size;
+        tile.dataset.correctY = Math.floor(index / size);
+        game.appendChild(tile);
+        tile.addEventListener("click", () => swapTile(tile, size));
+        tiles.push(tile);
+      });
+    }
+
+    function swapTile(tile, size) {
+      if (!firstTile) {
+        firstTile = tile;
+        tile.style.outline = "2px solid red";
+      } else if (tile === firstTile) {
+        tile.style.outline = "";
+        firstTile = null;
+      } else {
+        const temp = tile.style.backgroundPosition;
+        tile.style.backgroundPosition = firstTile.style.backgroundPosition;
+        firstTile.style.backgroundPosition = temp;
+
+        tile.style.outline = "";
+        firstTile.style.outline = "";
+        firstTile = null;
+
+        checkWin(size);
+      }
+    }
+
+    function checkWin(size) {
+      let correct = 0;
+      tiles.forEach((t, i) => {
+        const x = i % size;
+        const y = Math.floor(i / size);
+        const expectedPosition = `${-x * 100}px ${-y * 100}px`;
+        if (t.style.backgroundPosition === expectedPosition) {
+          correct++;
+          t.classList.add("correct");
+        } else {
+          t.classList.remove("correct");
+        }
+      });
+
+      if (correct === size * size) {
+        winSound.play();
+        result.innerHTML = `<div class="star">⭐️ Победа! ⭐️</div>`;
+        counter.textContent = `✔ Уровень  пройден!`;
+      }
+    }
+  </script>
+</body>
+
+</html>

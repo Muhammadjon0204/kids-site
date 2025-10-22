@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wordly — Найди пропущенную букву</title>
+  <link rel="stylesheet" href="wordly.css">
+</head>
+<body>
+  <h1>🔤 Игра Wordly: Найди пропущенную букву!</h1>
+
+  <select id="level">
+    <option value="">Выберите уровень</option>
+    <option value="easy">Easy</option>
+    <option value="medium">Medium</option>
+    <option value="hard">Hard</option>  
+  </select>
+
+  <div id="gameArea" class="hidden">
+    <div id="question"></div>
+
+    <input type="text" id="answer" placeholder="Введите слово">
+    <div class="buttons">
+      <button id="check">Проверить</button>
+      <button id="giveup">Не могу найти</button>
+      <button id="nextWord">Другое слово</button> <!-- Добавленная кнопка -->
+    </div>
+
+    <div id="result"></div>
+
+    <div class="links">
+      <a href="#" id="prev">⬅️ Предыдущая игра</a>
+      <a href="#" id="next">Следующая игра ➡️</a>
+    </div>
+  </div>
+
+  <script src="wordly.js"></script>
+</body>
+</html>

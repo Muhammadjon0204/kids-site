@@ -1,0 +1,75 @@
+/* Существующие стили остаются без изменений */
+body {
+  font-family: "Comic Sans MS", sans-serif;
+  text-align: center;
+  background: aliceblue;
+  padding: 40px;
+}
+
+h1 {
+  font-size: 32px;
+  color: #2b4f81;
+}
+
+select, input, button {
+  font-size: 18px;
+  padding: 8px 10px;
+  margin: 10px;
+  border-radius: 8px;
+  border: 2px solid #2b4f81;
+}
+
+button {
+  cursor: pointer;
+  background-color: #2b4f81;
+  color: white;
+  transition: 0.3s;
+}
+
+button:hover {
+  background-color: #3b69b3;
+}
+
+#question {
+  font-size: 26px;
+  margin: 20px 0;
+}
+
+#result {
+  font-size: 22px;
+  margin-top: 20px;
+}
+
+.hidden {
+  display: none;
+}
+
+.links {
+  margin-top: 25px;
+}
+
+.links a {
+  margin: 10px;
+  font-size: 18px;
+  text-decoration: none;
+  color: #2b4f81;
+}
+
+.links a:hover {
+  text-decoration: underline;
+}
+
+.correct {
+  color: green;
+  animation: flash 0.3s;
+}
+
+.wrong {
+  color: red;
+  animation: flash 0.3s;
+}
+
+@keyframes flash {
+  from { transform: scale(1.1); }
+  to { transform: scale(1); }
+}
